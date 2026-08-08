@@ -1,306 +1,58 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
-  <meta name="theme-color" content="#F1EFE9">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>LifeLog</title>
+
+  <!-- iPhoneのホーム画面用 -->
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="./lifelog-icon.png"
+  >
+
+  <!-- Webアプリ設定 -->
+  <link rel="manifest" href="./manifest.json">
+
+  <meta name="theme-color" content="#60787D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+  <meta name="apple-mobile-web-app-title" content="LifeLog">
+
   <style>
-    :root {
-      --bg: #F1EFE9;
-      --surface: rgba(255, 255, 255, .78);
-      --surface-solid: #FBFAF6;
-      --mist: #B7C7CC;
-      --main: #60787D;
-      --text: #2B3E42;
-      --deep: #1A2426;
-      --accent: #C86A4B;
-      --active: #576B3C;
-      --danger: #A8493D;
-      --shadow: 0 10px 30px rgba(26, 36, 38, .10);
-      --radius: 22px;
-    }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); }
+    html,
     body {
-      font-family: 'Zen Kaku Gothic New', system-ui, sans-serif;
-      background:
-        radial-gradient(circle at 15% 0%, rgba(183, 199, 204, .50), transparent 34%),
-        radial-gradient(circle at 100% 22%, rgba(200, 106, 75, .09), transparent 28%),
-        linear-gradient(160deg, #F5F2EB 0%, #E9ECE7 48%, #D9E2E2 100%);
-      background-attachment: fixed;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #F1EFE9;
     }
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
-    .app { width: min(100%, 560px); margin: 0 auto; min-height: 100vh; padding: max(18px, env(safe-area-inset-top)) 16px calc(98px + env(safe-area-inset-bottom)); }
-    .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-    .brand { font-family: 'Zen Maru Gothic'; font-size: 23px; font-weight: 700; letter-spacing: .06em; color: var(--deep); }
-    .subtitle { margin-top: 3px; font-size: 11px; letter-spacing: .16em; color: var(--main); }
-    .status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--main); box-shadow: 0 0 0 6px rgba(96,120,125,.10); margin-top: 8px; }
-    .view { display: none; animation: fade .18s ease; }
-    .view.active { display: block; }
-    @keyframes fade { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-    .card {
-      border: 1px solid rgba(43,62,66,.10);
-      border-radius: var(--radius);
-      background: var(--surface);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-      padding: 18px;
-      margin-bottom: 14px;
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #F1EFE9;
     }
-    .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .18em; color: var(--main); text-transform: uppercase; }
-    h2 { font-family: 'Zen Maru Gothic'; margin: 7px 0 14px; color: var(--deep); font-size: 20px; }
-    .timer-card { background: linear-gradient(145deg, rgba(64,82,86,.96), rgba(26,36,38,.96)); color: #F1EFE9; overflow: hidden; position: relative; }
-    .timer-card::after { content: ''; position: absolute; inset: auto -50px -70px auto; width: 180px; height: 180px; border-radius: 50%; background: rgba(183,199,204,.10); }
-    .timer-card .eyebrow { color: #B7C7CC; }
-    .timer-name { font-family: 'Zen Maru Gothic'; font-size: 21px; margin: 9px 0 4px; position: relative; z-index: 1; }
-    .timer-time { font-size: 38px; line-height: 1.1; letter-spacing: .05em; font-variant-numeric: tabular-nums; margin: 12px 0 18px; position: relative; z-index: 1; }
-    .active-line { display: flex; align-items: center; gap: 8px; color: #C8D5BC; font-size: 12px; }
-    .active-line::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #93A36F; box-shadow: 0 0 12px #93A36F; }
-    .row { display: flex; gap: 10px; }
-    .row > * { flex: 1; }
-    .field { margin-bottom: 15px; }
-    label { display: block; margin: 0 0 7px 2px; font-size: 12px; font-weight: 700; color: var(--main); }
-    input, select, textarea {
-      width: 100%; border: 1px solid rgba(43,62,66,.16); border-radius: 15px; background: rgba(255,255,255,.75); color: var(--deep); padding: 13px 14px; outline: none;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--main); box-shadow: 0 0 0 4px rgba(96,120,125,.10); }
-    textarea { min-height: 76px; resize: vertical; }
-    .btn { border: 0; border-radius: 15px; padding: 13px 16px; font-weight: 700; transition: transform .08s ease, opacity .15s; }
-    .btn:active { transform: scale(.98); }
-    .btn-primary { color: white; background: var(--accent); box-shadow: 0 7px 18px rgba(200,106,75,.22); }
-    .btn-secondary { color: white; background: var(--main); }
-    .btn-dark { color: white; background: var(--deep); }
-    .btn-ghost { color: var(--text); background: rgba(255,255,255,.50); border: 1px solid rgba(43,62,66,.14); }
-    .btn-danger { color: var(--danger); background: rgba(168,73,61,.08); border: 1px solid rgba(168,73,61,.15); }
-    .btn-full { width: 100%; }
-    .quick-form { display: flex; gap: 9px; }
-    .quick-form input { flex: 1; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .chip { border: 1px solid rgba(43,62,66,.13); border-radius: 999px; background: rgba(255,255,255,.52); padding: 7px 11px; font-size: 12px; color: var(--text); }
-    .rating { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
-    .rating input { display: none; }
-    .rating label { display: grid; place-items: center; height: 46px; margin: 0; border-radius: 14px; background: rgba(183,199,204,.25); border: 1px solid transparent; font-size: 17px; color: var(--main); }
-    .rating input:checked + label { background: var(--main); color: white; border-color: var(--main); box-shadow: 0 7px 16px rgba(96,120,125,.20); }
-    .rating-help { min-height: 38px; margin: 8px 2px 0; font-size: 12px; color: var(--main); }
-    .tag-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .tag-card { display: flex; align-items: center; gap: 10px; border: 1px solid rgba(43,62,66,.12); border-radius: 16px; background: rgba(255,255,255,.57); padding: 12px; }
-    .tag-swatch { width: 18px; height: 18px; border-radius: 6px; flex: 0 0 auto; }
-    .tag-name { flex: 1; font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
-    .icon-btn { border: 0; background: transparent; color: var(--main); padding: 5px; font-size: 17px; }
-    .history-controls { display: grid; grid-template-columns: 1fr 120px; gap: 8px; margin-bottom: 12px; }
-    .history-list { display: grid; gap: 10px; }
-    .history-item { border: 1px solid rgba(43,62,66,.12); border-radius: 18px; background: rgba(255,255,255,.64); padding: 14px; }
-    .history-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .history-title { font-family: 'Zen Maru Gothic'; font-weight: 700; color: var(--deep); }
-    .history-meta { font-size: 12px; color: var(--main); margin-top: 5px; }
-    .history-notes { font-size: 12px; color: var(--text); margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(43,62,66,.08); }
-    .tag-pill { white-space: nowrap; border-radius: 999px; padding: 5px 9px; color: white; font-size: 10px; font-weight: 700; }
-    .satisfaction { margin-left: 7px; color: var(--accent); font-weight: 700; }
-    .bottom-nav { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 560px); padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); background: rgba(241,239,233,.88); backdrop-filter: blur(18px); border-top: 1px solid rgba(43,62,66,.10); z-index: 30; }
-    .nav-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-    .nav-btn { border: 0; background: transparent; color: #6B7B7E; border-radius: 14px; padding: 8px 4px; font-size: 10px; font-weight: 700; }
-    .nav-icon { display: block; font-size: 20px; margin-bottom: 2px; }
-    .nav-btn.active { color: var(--deep); background: rgba(183,199,204,.30); }
-    .floating-active { display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(77px + env(safe-area-inset-bottom)); width: min(calc(100% - 28px), 532px); z-index: 20; border-radius: 17px; background: rgba(26,36,38,.94); color: white; box-shadow: var(--shadow); padding: 11px 14px; align-items: center; gap: 12px; }
-    .floating-active.show { display: flex; }
-    .floating-info { flex: 1; overflow: hidden; }
-    .floating-name { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .floating-time { font-size: 18px; font-variant-numeric: tabular-nums; }
-    .modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(26,36,38,.42); padding: 18px; align-items: flex-end; justify-content: center; }
-    .modal.show { display: flex; }
-    .modal-panel { width: min(100%, 560px); max-height: 88vh; overflow: auto; border-radius: 26px 26px 18px 18px; background: var(--surface-solid); padding: 20px; box-shadow: 0 24px 60px rgba(26,36,38,.26); }
-    .modal-title { font-family: 'Zen Maru Gothic'; font-size: 20px; margin: 0 0 14px; }
-    .overlap-item { padding: 10px 0; border-bottom: 1px solid rgba(43,62,66,.10); }
-    .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
-    .color-option input { display: none; }
-    .color-option label { height: 45px; border-radius: 13px; margin: 0; border: 3px solid transparent; box-shadow: inset 0 0 0 1px rgba(26,36,38,.07); }
-    .color-option input:checked + label { border-color: var(--deep); }
-    .empty { text-align: center; color: var(--main); padding: 28px 10px; font-size: 13px; }
-    .toast { position: fixed; left: 50%; top: max(16px, env(safe-area-inset-top)); transform: translate(-50%, -12px); opacity: 0; pointer-events: none; z-index: 200; width: min(calc(100% - 32px), 520px); color: white; background: rgba(26,36,38,.95); border-radius: 15px; padding: 12px 15px; transition: .2s; box-shadow: var(--shadow); font-size: 13px; }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
-    .loading { opacity: .55; pointer-events: none; }
-    .muted { color: var(--main); font-size: 12px; }
-    .divider { height: 1px; background: rgba(43,62,66,.09); margin: 16px 0; }
-    @media (max-width: 390px) { .row { flex-direction: column; gap: 0; } .timer-time { font-size: 33px; } }
   </style>
 </head>
+
 <body>
-  <main class="app" id="app">
-    <header class="topbar">
-      <div><div class="brand">LifeLog</div><div class="subtitle">QUIET ACTIVITY OBSERVER</div></div>
-      <div class="status-dot"></div>
-    </header>
-
-    <section class="view active" data-view="home">
-      <div id="homeTimer"></div>
-      <div class="card" id="quickStartCard">
-        <div class="eyebrow">Quick timer</div><h2>いま始める活動</h2>
-        <div class="quick-form"><input id="quickActivity" maxlength="120" placeholder="活動名だけ入力"><button class="btn btn-primary" onclick="startTimer()">開始</button></div>
-        <div class="chips" id="recentActivities"></div>
-      </div>
-      <div class="card">
-        <div class="eyebrow">Manual entry</div><h2>通常入力</h2>
-        <p class="muted">過去の活動や、タイマーを使わなかった記録を追加する。</p>
-        <button class="btn btn-secondary btn-full" onclick="openNewEntry()">記録を入力</button>
-      </div>
-    </section>
-
-    <section class="view" data-view="entry">
-      <div class="card">
-        <div class="eyebrow" id="entryEyebrow">Manual entry</div><h2 id="entryTitle">活動を記録</h2>
-        <form id="entryForm" onsubmit="submitEntry(event)">
-          <input type="hidden" id="entryId">
-          <div class="field"><label for="activityName">活動名 *</label><input id="activityName" maxlength="120" required></div>
-          <div class="row">
-            <div class="field"><label for="startAt">開始 *</label><input id="startAt" type="datetime-local" required></div>
-            <div class="field"><label for="endAt">終了 *</label><input id="endAt" type="datetime-local" required></div>
-          </div>
-          <div class="field"><label for="tagId">タグ *</label><select id="tagId" required></select></div>
-          <div class="field">
-            <label>満足度 *</label>
-            <div class="rating" id="ratingGroup"></div><div class="rating-help" id="ratingHelp"></div>
-          </div>
-          <div class="field"><label for="reason">活動の理由</label><textarea id="reason" maxlength="300" placeholder="なぜこれをした？　一言で十分"></textarea></div>
-          <div class="field"><label for="review">評価の理由</label><textarea id="review" maxlength="300" placeholder="なぜこの満足度？　一言で十分"></textarea></div>
-          <button class="btn btn-primary btn-full" type="submit">保存する</button>
-          <button class="btn btn-ghost btn-full" type="button" style="margin-top:9px" onclick="goBackFromEntry()">戻る</button>
-          <button class="btn btn-danger btn-full" id="deleteEntryBtn" type="button" style="margin-top:9px;display:none" onclick="deleteCurrentEntry()">この記録を削除</button>
-        </form>
-      </div>
-    </section>
-
-    <section class="view" data-view="history">
-      <div class="card">
-        <div class="eyebrow">Archive</div><h2>過去の記録</h2>
-        <div class="history-controls"><input id="historyKeyword" placeholder="活動名・メモを検索"><select id="historyTag"></select></div>
-        <button class="btn btn-ghost btn-full" onclick="loadHistory(true)">絞り込む</button>
-      </div>
-      <div class="history-list" id="historyList"></div>
-      <button class="btn btn-ghost btn-full" id="moreHistoryBtn" style="display:none" onclick="loadMoreHistory()">さらに表示</button>
-    </section>
-
-    <section class="view" data-view="tags">
-      <div class="card">
-        <div class="eyebrow">Tag settings</div><h2>活動タグ</h2>
-        <div class="tag-grid" id="tagGrid"></div>
-        <div class="divider"></div>
-        <button class="btn btn-secondary btn-full" onclick="openTagModal()">新しいタグを追加</button>
-      </div>
-    </section>
-  </main>
-
-  <div class="floating-active" id="floatingActive">
-    <div class="floating-info"><div class="floating-name" id="floatingName"></div><div class="floating-time" id="floatingTime">00:00:00</div></div>
-    <button class="btn btn-primary" onclick="stopTimer()">終了</button>
-  </div>
-
-  <nav class="bottom-nav"><div class="nav-inner">
-    <button class="nav-btn active" data-nav="home" onclick="showView('home')"><span class="nav-icon">◉</span>ホーム</button>
-    <button class="nav-btn" data-nav="entry" onclick="openNewEntry()"><span class="nav-icon">＋</span>入力</button>
-    <button class="nav-btn" data-nav="history" onclick="showView('history')"><span class="nav-icon">▤</span>履歴</button>
-    <button class="nav-btn" data-nav="tags" onclick="showView('tags')"><span class="nav-icon">◇</span>タグ</button>
-  </div></nav>
-
-  <div class="modal" id="overlapModal"><div class="modal-panel">
-    <h3 class="modal-title">時刻が重複している</h3><p class="muted">ながら活動なら、そのまま保存できる。</p>
-    <div id="overlapList"></div>
-    <button class="btn btn-primary btn-full" onclick="confirmOverlap()">重複したまま保存</button>
-    <button class="btn btn-ghost btn-full" style="margin-top:9px" onclick="closeModal('overlapModal')">時刻を修正</button>
-  </div></div>
-
-  <div class="modal" id="tagModal"><div class="modal-panel">
-    <h3 class="modal-title" id="tagModalTitle">タグを追加</h3>
-    <input type="hidden" id="editTagId">
-    <div class="field"><label for="tagNameInput">タグ名</label><input id="tagNameInput" maxlength="40"></div>
-    <div class="field"><label>色</label><div class="palette" id="palette"></div></div>
-    <button class="btn btn-primary btn-full" onclick="saveTag()">保存する</button>
-    <button class="btn btn-ghost btn-full" style="margin-top:9px" onclick="closeModal('tagModal')">閉じる</button>
-    <button class="btn btn-danger btn-full" id="archiveTagBtn" style="margin-top:9px;display:none" onclick="archiveCurrentTag()">このタグを使用停止</button>
-  </div></div>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    const state = { activeTimer: null, tags: [], palette: [], recentActivities: [], historyPage: 1, historyHasMore: false, historyItems: [], pendingPayload: null, entryOrigin: 'home', timerInterval: null };
-    const ratingText = {1:'大不満：全く使い物にならない、または強い不快感があった',2:'不満：期待を下回り、ストレスや使いづらさを感じた',3:'普通：可もなく不可もない。より良い選択肢があれば乗り換える',4:'満足：期待通り。次もまた選びたい',5:'大変満足：期待を大きく超え、人にも勧めたい'};
-
-    document.addEventListener('DOMContentLoaded', () => {
-      buildRating();
-      callServer('getInitialData').then(data => { Object.assign(state, data); renderAll(); }).catch(showError);
-    });
-
-    function callServer(functionName, ...args) {
-      return new Promise((resolve, reject) => {
-        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[functionName](...args);
-      });
-    }
-    function setLoading(on) { document.getElementById('app').classList.toggle('loading', on); }
-    function showError(err) { toast(err && err.message ? err.message : String(err), true); setLoading(false); }
-    function toast(message, danger=false) { const el=document.getElementById('toast'); el.textContent=message; el.style.background=danger?'rgba(168,73,61,.96)':'rgba(26,36,38,.95)'; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2800); }
-    function escapeHtml(str='') { return String(str).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-    function pad(n){return String(n).padStart(2,'0');}
-    function toLocalInput(iso){ const d=iso?new Date(iso):new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
-    function formatDateTime(iso){ if(!iso)return ''; return new Intl.DateTimeFormat('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso)); }
-    function formatTime(iso){ return new Intl.DateTimeFormat('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(iso)); }
-    function formatDuration(min){ if(min==null)return '記録中'; const m=Math.round(min); const h=Math.floor(m/60); const rest=m%60; return h?`${h}時間${rest?rest+'分':''}`:`${rest}分`; }
-    function elapsed(startIso){ const sec=Math.max(0,Math.floor((Date.now()-new Date(startIso).getTime())/1000)); return `${pad(Math.floor(sec/3600))}:${pad(Math.floor((sec%3600)/60))}:${pad(sec%60)}`; }
-
-    function renderAll(){ renderTagsInSelects(); renderRecent(); renderTimer(); renderTagGrid(); }
-    function showView(name){ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===name)); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.nav===name)); if(name==='history') loadHistory(true); if(name==='tags') renderTagGrid(); renderFloating(); window.scrollTo({top:0,behavior:'smooth'}); }
-
-    function renderTimer(){
-      clearInterval(state.timerInterval);
-      const host=document.getElementById('homeTimer');
-      const quick=document.getElementById('quickStartCard');
-      if(state.activeTimer){
-        host.innerHTML=`<div class="card timer-card"><div class="active-line">ACTIVE SESSION</div><div class="timer-name">${escapeHtml(state.activeTimer.activityName)}</div><div class="timer-time" id="mainTimerTime">${elapsed(state.activeTimer.startAt)}</div><div class="row"><button class="btn btn-primary" onclick="stopTimer()">終了する</button><button class="btn btn-ghost" style="color:white;border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.08)" onclick="cancelTimer()">取り消す</button></div></div>`;
-        quick.style.display='none';
-        state.timerInterval=setInterval(updateTimerDisplays,1000);
-      } else { host.innerHTML=''; quick.style.display='block'; }
-      renderFloating();
-    }
-    function updateTimerDisplays(){ if(!state.activeTimer)return; const t=elapsed(state.activeTimer.startAt); const main=document.getElementById('mainTimerTime'); if(main)main.textContent=t; document.getElementById('floatingTime').textContent=t; }
-    function renderFloating(){ const current=document.querySelector('.view.active')?.dataset.view; const el=document.getElementById('floatingActive'); const show=state.activeTimer && current!=='home' && current!=='entry'; el.classList.toggle('show',!!show); if(show){document.getElementById('floatingName').textContent=state.activeTimer.activityName; updateTimerDisplays();} }
-    function renderRecent(){ const el=document.getElementById('recentActivities'); el.innerHTML=(state.recentActivities||[]).map(name=>`<button class="chip" onclick="useRecent(${JSON.stringify(name).replace(/"/g,'&quot;')})">${escapeHtml(name)}</button>`).join(''); }
-    function useRecent(name){document.getElementById('quickActivity').value=name;}
-
-    async function startTimer(){ const input=document.getElementById('quickActivity'); const name=input.value.trim(); if(!name)return toast('活動名を入力して。',true); setLoading(true); try{ state.activeTimer=await callServer('startTimer',name); input.value=''; if(!state.recentActivities.includes(name))state.recentActivities.unshift(name); renderRecent(); renderTimer(); toast('タイマーを開始した。'); }catch(e){showError(e);}finally{setLoading(false);} }
-    async function stopTimer(){ setLoading(true); try{ const data=await callServer('prepareStopTimer'); openEntry(data,'timer'); }catch(e){showError(e);}finally{setLoading(false);} }
-    async function cancelTimer(){ if(!confirm('実行中の記録を取り消す？'))return; setLoading(true); try{await callServer('cancelActiveTimer'); state.activeTimer=null; renderTimer(); toast('タイマーを取り消した。');}catch(e){showError(e);}finally{setLoading(false);} }
-
-    function buildRating(){ const el=document.getElementById('ratingGroup'); el.innerHTML=[1,2,3,4,5].map(n=>`<input id="rate${n}" type="radio" name="satisfaction" value="${n}" ${n===3?'checked':''} onchange="updateRatingHelp()"><label for="rate${n}">${n}</label>`).join(''); updateRatingHelp(); }
-    function updateRatingHelp(){ const n=Number(document.querySelector('input[name=satisfaction]:checked')?.value||3); document.getElementById('ratingHelp').textContent=ratingText[n]; }
-    function setRating(n){ const input=document.getElementById('rate'+(n||3)); if(input)input.checked=true; updateRatingHelp(); }
-    function renderTagsInSelects(){ const options=state.tags.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join(''); document.getElementById('tagId').innerHTML=`<option value="">選択して</option>${options}`; document.getElementById('historyTag').innerHTML=`<option value="">すべてのタグ</option>${options}`; }
-
-    function openNewEntry(){ const now=new Date(); const end=new Date(now.getTime()+30*60000); openEntry({id:'',activityName:'',startAt:now.toISOString(),endAt:end.toISOString(),tagId:'',satisfaction:3,reason:'',review:''},'home'); }
-    function openEntry(data,origin){ state.entryOrigin=origin||'history'; document.getElementById('entryId').value=data.id||''; document.getElementById('activityName').value=data.activityName||''; document.getElementById('startAt').value=toLocalInput(data.startAt); document.getElementById('endAt').value=toLocalInput(data.endAt); document.getElementById('tagId').value=data.tagId||''; document.getElementById('reason').value=data.reason||''; document.getElementById('review').value=data.review||''; setRating(data.satisfaction||3); document.getElementById('entryEyebrow').textContent=origin==='timer'?'Finish session':data.id?'Edit archive':'Manual entry'; document.getElementById('entryTitle').textContent=origin==='timer'?'活動を終了':'活動を記録'; document.getElementById('deleteEntryBtn').style.display=data.id&&origin!=='timer'?'block':'none'; showView('entry'); }
-    function goBackFromEntry(){ showView(state.entryOrigin==='history'?'history':'home'); }
-    async function submitEntry(event){ event.preventDefault(); const payload=collectEntryPayload(false); if(!payload)return; state.pendingPayload=payload; await savePayload(payload); }
-    function collectEntryPayload(forceOverlap){ const start=new Date(document.getElementById('startAt').value); const end=new Date(document.getElementById('endAt').value); if(Number.isNaN(start.getTime())||Number.isNaN(end.getTime())){toast('開始・終了時刻を確認して。',true);return null;} return {id:document.getElementById('entryId').value,activityName:document.getElementById('activityName').value,tagId:document.getElementById('tagId').value,satisfaction:Number(document.querySelector('input[name=satisfaction]:checked').value),reason:document.getElementById('reason').value,review:document.getElementById('review').value,startMs:start.getTime(),endMs:end.getTime(),forceOverlap}; }
-    async function savePayload(payload){ setLoading(true); try{ const result=await callServer('saveEntry',payload); if(result.needsOverlapConfirmation){state.pendingPayload=payload;showOverlap(result.overlaps);return;} state.activeTimer=result.activeTimer||null; renderTimer(); await refreshInitialBits(); toast('保存した。'); showView('home'); }catch(e){showError(e);}finally{setLoading(false);} }
-    function showOverlap(items){ document.getElementById('overlapList').innerHTML=items.map(i=>`<div class="overlap-item"><strong>${escapeHtml(i.activityName)}</strong><div class="muted">${escapeHtml(i.tagName)}｜${formatDateTime(i.startAt)}–${formatTime(i.endAt)}</div></div>`).join(''); openModal('overlapModal'); }
-    function confirmOverlap(){ closeModal('overlapModal'); if(!state.pendingPayload)return; savePayload({...state.pendingPayload,forceOverlap:true}); }
-    async function refreshInitialBits(){ const data=await callServer('getInitialData'); state.tags=data.tags; state.palette=data.palette; state.recentActivities=data.recentActivities; state.activeTimer=data.activeTimer; renderAll(); }
-    async function deleteCurrentEntry(){ const id=document.getElementById('entryId').value; if(!id||!confirm('この記録を削除する？'))return; setLoading(true); try{await callServer('deleteEntry',id);toast('削除した。');showView('history');}catch(e){showError(e);}finally{setLoading(false);} }
-
-    async function loadHistory(reset=false){ if(reset){state.historyPage=1;state.historyItems=[];} setLoading(true); try{ const result=await callServer('getEntries',{page:state.historyPage,pageSize:30,keyword:document.getElementById('historyKeyword').value,tagId:document.getElementById('historyTag').value}); state.historyItems=reset?result.items:state.historyItems.concat(result.items); state.historyHasMore=result.hasMore; renderHistory(); }catch(e){showError(e);}finally{setLoading(false);} }
-    function loadMoreHistory(){state.historyPage++;loadHistory(false);}
-    function renderHistory(){ const el=document.getElementById('historyList'); if(!state.historyItems.length){el.innerHTML='<div class="card empty">記録はまだない。</div>';}else{el.innerHTML=state.historyItems.map(i=>`<article class="history-item" onclick="editHistory('${i.id}')"><div class="history-head"><div><div class="history-title">${escapeHtml(i.activityName)}</div><div class="history-meta">${formatDateTime(i.startAt)}–${formatTime(i.endAt)}｜${formatDuration(i.durationMinutes)}<span class="satisfaction">満足度 ${i.satisfaction}</span></div></div><span class="tag-pill" style="background:${tagColor(i.tagId)}">${escapeHtml(i.tagName||'未分類')}</span></div>${i.reason||i.review?`<div class="history-notes">${i.reason?`理由：${escapeHtml(i.reason)}`:''}${i.reason&&i.review?'<br>':''}${i.review?`評価：${escapeHtml(i.review)}`:''}</div>`:''}</article>`).join('');} document.getElementById('moreHistoryBtn').style.display=state.historyHasMore?'block':'none'; }
-    function tagColor(id){return state.tags.find(t=>t.id===id)?.color||'#68777B';}
-    async function editHistory(id){ setLoading(true); try{const entry=await callServer('getEntry',id);openEntry(entry,'history');}catch(e){showError(e);}finally{setLoading(false);} }
-
-    function renderTagGrid(){ const el=document.getElementById('tagGrid'); el.innerHTML=state.tags.map(t=>`<div class="tag-card"><span class="tag-swatch" style="background:${t.color}"></span><span class="tag-name">${escapeHtml(t.name)}</span><button class="icon-btn" onclick="openTagModal('${t.id}')">✎</button></div>`).join(''); }
-    function renderPalette(selected){ document.getElementById('palette').innerHTML=state.palette.map((c,i)=>`<div class="color-option"><input type="radio" id="color${i}" name="tagColor" value="${c.hex}" ${(selected||state.palette[0].hex)===c.hex?'checked':''}><label for="color${i}" style="background:${c.hex}" title="${escapeHtml(c.name)}"></label></div>`).join(''); }
-    function openTagModal(id=''){ const tag=state.tags.find(t=>t.id===id); document.getElementById('editTagId').value=id; document.getElementById('tagNameInput').value=tag?.name||''; document.getElementById('tagModalTitle').textContent=tag?'タグを編集':'タグを追加'; document.getElementById('archiveTagBtn').style.display=tag?'block':'none'; renderPalette(tag?.color); openModal('tagModal'); }
-    async function saveTag(){ const payload={id:document.getElementById('editTagId').value,name:document.getElementById('tagNameInput').value,color:document.querySelector('input[name=tagColor]:checked')?.value}; setLoading(true); try{const result=await callServer('saveTag',payload);state.tags=result.tags;renderAll();closeModal('tagModal');toast('タグを保存した。');}catch(e){showError(e);}finally{setLoading(false);} }
-    async function archiveCurrentTag(){ const id=document.getElementById('editTagId').value;if(!confirm('このタグを新規入力の候補から外す？ 過去データには残る。'))return;setLoading(true);try{const result=await callServer('archiveTag',id);state.tags=result.tags;renderAll();closeModal('tagModal');toast('タグを使用停止にした。');}catch(e){showError(e);}finally{setLoading(false);} }
-    function openModal(id){document.getElementById(id).classList.add('show');}
-    function closeModal(id){document.getElementById(id).classList.remove('show');}
-  </script>
+  <iframe
+    src="ここにGASのWebアプリURL"
+    title="LifeLog"
+    allow="clipboard-read; clipboard-write"
+  ></iframe>
 </body>
 </html>
